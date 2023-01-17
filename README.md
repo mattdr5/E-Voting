@@ -1,6 +1,9 @@
 # SimpleE-VotingSystem
-##
-Questo è un progett
+## Introduzione
+Questo è un progetto di gruppo per l'esame di Sicurezza dei Dati 2022/2023 presso l'Università degli Studi di Salerno, Laurea Magistrale in Informatica.  
+
+
+##Perchè questo progetto? 
 L'integrità elettorale è essenziale non solo per le nazioni democratiche, ma anche per la fiducia e la responsabilità degli elettori statali. 
 I metodi di voto politico sono cruciali in questo senso. Dal punto di vista del governo, le tecnologie di voto elettronico possono aumentare la partecipazione e la fiducia degli elettori e riaccendere l'interesse per il sistema di voto.
 
@@ -36,3 +39,7 @@ In questo progetto cercheremo di sfruttare la blockchain per correggere le caren
 
 ### Chi non può votare:
 - Chi ha già votato.
+
+## Membri del progetto
+- [Matteo Della Rocca](https://github.com/mattdr5)<br />
+- [Carmine D'Angelo](https://github.com/Darnxca)<br/>
