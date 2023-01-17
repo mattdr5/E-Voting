@@ -31,7 +31,7 @@ In questo progetto cercheremo di sfruttare la blockchain per correggere le caren
 ### Assunzioni:
 - Solo chi ha organizzato le elezioni può avviare/aggiornare le tempistiche delle votazioni.
 
-### Who can Vote:
+### Chi può votare:
 - Ad ogni elettore è concesso un solo voto. Un elettore può votare nella circoscrizione in cui si è registrato
 
 ### Chi non può votare:
