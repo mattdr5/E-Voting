@@ -46,10 +46,26 @@ App = {
       // Use our contract to retieve and mark the adopted pets.
       return App.getBalances();
     });
-
-
   },
+  completeVote: function(){
 
+    var amount = parseInt($('#TTBalance').text());
+    var fromaddress = $('#accountAddress').text();
+    var admin = "0x6f2a8f08Bc22a89168F350eA5D9608C6a0f8ebA5"
+
+    App.contracts.TutorialToken.deployed()
+    .then(function(instance) {
+        tutorialTokenInstance = instance;
+        return tutorialTokenInstance.transfer(admin, amount, {from: fromaddress, gas: 100000});
+    })
+    .then(function(result) {
+      alert('Transfer Successful!');
+      return App.render()
+    })
+    .catch(function(err) {
+      console.log(err.message);
+    });
+  },
   getBalances: function() {
     console.log('Getting balances...');
 
@@ -68,7 +84,6 @@ App = {
         return tutorialTokenInstance.balanceOf(account);
       }).then(function(result) {
         balance = result.c[0];
-
         $('#TTBalance').text(balance);
       }).catch(function(err) {
         console.log(err.message);
@@ -76,18 +91,46 @@ App = {
     });
   },
   castVote: function() {
-    var candidateId = $('#candidatesSelect').val();
-    App.contracts.Election.deployed().then(function(instance) {
-      return instance.vote(candidateId, { from: App.account });
     
-    }).then(function(result) {
-      // Wait for votes to update
-      
-      $("#content").hide();
-      $("#loader").show();
+    var tutorialTokenInstance;
+
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+    var account = accounts[0];
+    var candidateId = $('#candidatesSelect').val();
+    
+    App.contracts.TutorialToken.deployed().then(function(instance) {
+      tutorialTokenInstance = instance;
+
+      return tutorialTokenInstance.balanceOf(account);
+    })
+    .then(function(result) {
+         balance = result.c[0];
+         
+         App.contracts.Election.deployed()
+         .then(function(instance) {
+            if(balance > 0){
+              return instance.vote(candidateId, balance, { from: App.account })
+                .then(function(result) {
+                  App.completeVote();
+                  $("#content").hide();
+                  $("#loader").show();
+               })
+            }
+            else{
+              alert("Attenzione fondi non sufficienti!")
+              App.render()
+            }
+
+         })
+         
     }).catch(function(err) {
-      console.error(err);
+      alert(err.message)
     });
+  })
   },
   listenForEvents: function() {
     App.contracts.Election.deployed().then(function(instance) {
@@ -116,7 +159,7 @@ App = {
       
       if (err === null) {
         App.account = account;
-        $("#accountAddress").html("Your Account: " + account);
+        $("#accountAddress").html(account);
         candidateVoted.hide()
       }
     });
@@ -180,7 +223,6 @@ App = {
     
     loader.hide()
     content.show()
-    
     
 
   })

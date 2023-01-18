@@ -1,5 +1,7 @@
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
 contract Election {
     // Model a Candidate
     struct Candidate {
@@ -33,13 +35,13 @@ contract Election {
         candidates[candidatesCount] = Candidate(candidatesCount, candidate.name, 0, candidate.partyShortcut, candidate.partyFlag);
     }
 
-    function getCandidateNameFromID(uint _candidateId) public returns(string memory _name){
-        return candidates[_candidateId].name;
-    }
 
-    function vote (uint _candidateId) public {
-        // require that they haven't voted before
-        require(!voters[msg.sender]);
+    function vote (uint _candidateId, uint _balance) public {
+
+        // Requisiti per il votante
+        require(!voters[msg.sender], "Hai gia votato");
+        
+        require(_balance > 0, "Fondi insufficienti");
 
         // Requisiti per un candidato
         require(_candidateId > 0 && _candidateId <= candidatesCount);
