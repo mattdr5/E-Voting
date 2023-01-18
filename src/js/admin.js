@@ -15,6 +15,9 @@ App = {
       }
     });
 
+    window.ethereum.on('accountsChanged', function (accounts) {
+      App.accountChange();
+    });
 
     return App.initWeb3();
   },
@@ -51,16 +54,29 @@ App = {
 
   bindEvents: function() {
     $(document).on('click', '#transferButton', App.IsAdmin);
-    $(document).on('click', '#getAccounts', App.getAccounts);
   },
 
-  getAccounts: function(event){
-    event.preventDefault();
+  accountChange: function() {
+    var tutorialTokenInstance;
 
-    web3.eth.getAccounts(function(error, accounts){
-      alert(accounts);
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.TutorialToken.deployed().then(function(instance) {
+        tutorialTokenInstance = instance;
+
+        return tutorialTokenInstance.isAdmin(account);
+      }).then(function(result) {
+        if(result == false)
+          window.location.href = "vote.html";
+      }).catch(function(err) {
+        console.log(err.message);
+      });
     });
-
   },
 
   IsAdmin: function(event) {
