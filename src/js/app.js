@@ -35,102 +35,20 @@ App = {
       return App.render();
     });
 
-    $.getJSON('TutorialToken.json', function(data) {
-      // Get the necessary contract artifact file and instantiate it with truffle-contract.
-      var TutorialTokenArtifact = data;
-      App.contracts.TutorialToken = TruffleContract(TutorialTokenArtifact);
-
-      // Set the provider for our contract.
-      App.contracts.TutorialToken.setProvider(App.web3Provider);
-
-      // Use our contract to retieve and mark the adopted pets.
-      return App.getBalances();
-    });
-  },
-  completeVote: function(){
-
-    var amount = parseInt($('#TTBalance').text());
-    var fromaddress = $('#accountAddress').text();
-    var admin = "0x6f2a8f08Bc22a89168F350eA5D9608C6a0f8ebA5"
-
-    App.contracts.TutorialToken.deployed()
-    .then(function(instance) {
-        tutorialTokenInstance = instance;
-        return tutorialTokenInstance.transfer(admin, amount, {from: fromaddress, gas: 100000});
-    })
-    .then(function(result) {
-      alert('Transfer Successful!');
-      return App.render()
-    })
-    .catch(function(err) {
-      console.log(err.message);
-    });
-  },
-  getBalances: function() {
-    console.log('Getting balances...');
-
-    var tutorialTokenInstance;
-
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-
-      var account = accounts[0];
-
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
-
-        return tutorialTokenInstance.balanceOf(account);
-      }).then(function(result) {
-        balance = result.c[0];
-        $('#TTBalance').text(balance);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
   },
   castVote: function() {
-    
-    var tutorialTokenInstance;
-
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-
-    var account = accounts[0];
     var candidateId = $('#candidatesSelect').val();
-    
-    App.contracts.TutorialToken.deployed().then(function(instance) {
-      tutorialTokenInstance = instance;
+    App.contracts.Election.deployed().then(function(instance) {
+      return instance.vote(candidateId, { from: App.account });
 
-      return tutorialTokenInstance.balanceOf(account);
-    })
-    .then(function(result) {
-         balance = result.c[0];
-         
-         App.contracts.Election.deployed()
-         .then(function(instance) {
-            if(balance > 0){
-              return instance.vote(candidateId, balance, { from: App.account })
-                .then(function(result) {
-                  App.completeVote();
-                  $("#content").hide();
-                  $("#loader").show();
-               })
-            }
-            else{
-              alert("Attenzione fondi non sufficienti!")
-              App.render()
-            }
+    }).then(function(result) {
+      // Wait for votes to update
 
-         })
-         
+      $("#content").hide();
+      $("#loader").show();
     }).catch(function(err) {
-      alert(err.message)
+      console.error(err);
     });
-  })
   },
   listenForEvents: function() {
     App.contracts.Election.deployed().then(function(instance) {
@@ -165,7 +83,7 @@ App = {
     });
 
     // Load contract data
-  App.contracts.Election.deployed().then(function(instance) {
+    App.contracts.Election.deployed().then(function(instance) {
     electionInstance = instance;
     return electionInstance.candidatesCount();
   })

@@ -4,17 +4,6 @@ App = {
   
 
   init: function() {
-
-    $.getJSON('../users.json', function(data) {
-      var users = $("#TTTransferAddress");
-      users.empty();
-      for (i = 0; i < data.length; i ++) {
-        var option =" <option value='"+ data[i].address+"' >" + data[i].address + "</option>";
-        users.append(option);
-        console.log("Utente: " + (i+1) +data[i].address);
-      }
-    });
-
     window.ethereum.on('accountsChanged', function (accounts) {
       App.accountChange();
     });
@@ -37,27 +26,26 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('TutorialToken.json', function(data) {
+    $.getJSON('Election.json', function(data) {
+      var electionArtifact = data;
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
-      var TutorialTokenArtifact = data;
-      App.contracts.TutorialToken = TruffleContract(TutorialTokenArtifact);
+      App.contracts.Election = TruffleContract(electionArtifact);
+      // Connect provider to interact with contract
+      App.contracts.Election.setProvider(App.web3Provider);
 
-      // Set the provider for our contract.
-      App.contracts.TutorialToken.setProvider(App.web3Provider);
+      return App.showCandidates();
 
-      // Use our contract to retieve and mark the adopted pets.
-      return App.getBalances();
+
     });
 
     return App.bindEvents();
   },
-
   bindEvents: function() {
-    $(document).on('click', '#transferButton', App.IsAdmin);
+    $(document).on('click', '#closeElection', App.closeElection);
+    $(document).on('click', '#openElection', App.openElection);
   },
-
   accountChange: function() {
-    var tutorialTokenInstance;
+    var electionInstance;
 
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -66,10 +54,10 @@ App = {
 
       var account = accounts[0];
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
+      App.contracts.Election.deployed().then(function(instance) {
+        electionInstance = instance;
 
-        return tutorialTokenInstance.isAdmin(account);
+        return electionInstance.isOwner(account);
       }).then(function(result) {
         if(result == false)
           window.location.href = "vote.html";
@@ -78,41 +66,33 @@ App = {
       });
     });
   },
+  showCandidates : function() {
+    var candidateList = $("#candidate-list")
 
-  IsAdmin: function(event) {
-    var tutorialTokenInstance;
+    // Load contract data
+    App.contracts.Election.deployed()
+    .then(function(instance) {
+        electionInstance = instance;
+        return electionInstance.candidatesCount();
+    })
+    .then(function(candidatesCount) {
+      for (var i = 1; i <= candidatesCount; i++) {
+          electionInstance.candidates(i).then(function(candidate) {
+          var id = candidate[0];
+          var name = candidate[1];
+          var partitoShortcut = candidate[3]
+          var partitoImg = candidate[4]
+          var voteCount = candidate[2];
 
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-
-      var account = accounts[0];
-
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
-
-        return tutorialTokenInstance.isAdmin(account);
-      }).then(function(result) {
-        if(result == true)
-        return App.handleTransfer(event);
-        else
-          alert("operazione non possibile")
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
+          var candidatoTemplate = `<tr><th> ${id}</th><td> ${name} </td><td> ${voteCount} </td></tr>`
+          candidateList.append(candidatoTemplate);
+          })
+        }
+      }).catch((err)=>{
+      console.warn("Errrore: "+ err);
+   })
   },
-
-  handleTransfer: function(event) {
-    event.preventDefault();
-
-    var amount = parseInt($('#TTTransferAmount').val());
-    var toAddress = $('#TTTransferAddress').val();
-
-    console.log('Transfer ' + amount + ' TT to ' + toAddress);
-
-    var tutorialTokenInstance;
+  closeElection : function() {
 
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -121,22 +101,21 @@ App = {
 
       var account = accounts[0];
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
-        return tutorialTokenInstance.transfer(toAddress, amount, {from: account, gas: 100000});
-      }).then(function(result) {
-        alert('Transfer Successful!');
-        return App.getBalances();
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
+      App.contracts.Election.deployed()
+      .then(function(instance) {
+        electionInstance = instance;
+        return electionInstance.closeElection({from : account});
+     })
+     .then(function(result) {
+        alert("Elezione chiusa con successo!!")
+     
+      })
+      .catch((err) =>{
+        err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione già chiusa!...!");
+      })
+    })
   },
-
-  getBalances: function() {
-    console.log('Getting balances...');
-
-    var tutorialTokenInstance;
+  openElection : function() {
 
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -145,18 +124,21 @@ App = {
 
       var account = accounts[0];
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
-
-        return tutorialTokenInstance.balanceOf(account);
-      }).then(function(result) {
-        balance = result.c[0];
-
-        $('#TTBalance').text(balance);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
+      App.contracts.Election.deployed()
+      .then(function(instance) {
+        electionInstance = instance;
+        return electionInstance.openElection({from : account});
+     })
+     .then(function(result) {
+        alert("Elezione aperta con successo!!")
+      })
+      .catch((err) =>{
+        err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione già aperta!...!");
+      })
+    }).catch((err)=> {
+      alert("Operazione annullata!");
+      console.log(err)
+    })
   }
 
 };

@@ -1,8 +1,9 @@
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract Election {
+
+contract Election is AccessControl {
     // Model a Candidate
     struct Candidate {
         uint id;
@@ -13,9 +14,12 @@ contract Election {
         
     }
 
+
     event votedEvent (
         uint indexed _candidateId,  string candidateName
     );
+    event checksoloOwner(address user);
+
 
     // Store accounts that have voted
     mapping(address => bool) public voters;
@@ -25,19 +29,51 @@ contract Election {
     // Store Candidates Count
 
     uint public candidatesCount;
-
+    bool public open;
+    
     constructor () public {
-        inizializzaDatabaseCandidati();
+         inizializzaDatabaseCandidati();
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+         open = true; //Elezioni aperte
     }
+
 
     function addCandidate (Candidate memory candidate) private {
         candidatesCount ++;
         candidates[candidatesCount] = Candidate(candidatesCount, candidate.name, 0, candidate.partyShortcut, candidate.partyFlag);
     }
 
+    function openElection() public soloOwner returns (bool){
+        require(open == false, "Elezione gia aperta!"); //Se l'elezione è chiusa..
+        open = true;
+
+        return true; //Operazione riuscita!
+    }
+
+    function closeElection() public soloOwner returns (bool){
+        require(open == true, "Elezione gia chiuse!"); //Se l'elezione è aperta..
+        open = false;
+        
+        return true; //Operazione riuscita! 
+    }
+
+    function isElectionOpen() public returns (bool){
+        return open;
+    }
+
+    modifier soloOwner() {
+      emit checksoloOwner(msg.sender);
+      require(isOwner(msg.sender), "Funzione solo per il propietario");
+      _;
+    }
+
+    function isOwner(address account) public virtual view returns (bool) {
+      return hasRole(DEFAULT_ADMIN_ROLE, account);
+    }
 
     function vote (uint _candidateId, uint _balance) public {
 
+        require(open, "Elezioni terminate");
         // Requisiti per il votante
         require(!voters[msg.sender], "Hai gia votato");
         
