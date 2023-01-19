@@ -33,6 +33,7 @@ App = {
       // Connect provider to interact with contract
       App.contracts.Election.setProvider(App.web3Provider);
 
+      App.electionIsOpen();
       return App.showCandidates();
 
 
@@ -70,6 +71,7 @@ App = {
     });
   },
   showCandidates : function() {
+    App.electionIsOpen();
     $("#candidate-list").empty();
     var candidateList = $("#candidate-list")
 
@@ -198,6 +200,7 @@ App = {
      })
      .then(function(result) {
         alert("Elezione chiusa con successo!!")
+        App.electionIsOpen();
      
       })
       .catch((err) =>{
@@ -221,6 +224,7 @@ App = {
      })
      .then(function(result) {
         alert("Elezione aperta con successo!!")
+        App.electionIsOpen();
       })
       .catch((err) =>{
         err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione già aperta!...!");
@@ -229,7 +233,28 @@ App = {
       alert("Operazione annullata!");
       console.log(err)
     })
-  }
+  },
+  electionIsOpen: function(){
+    
+     App.contracts.Election.deployed().then(function(instance) {
+       electionInstance = instance;
+
+       return electionInstance.open();
+     }).then(async function(result) {
+       if(result){
+          $("#election-status").text("check_circle");
+          $("#election-status").css('color', 'green');
+          $("#election-status-text").text("Aperta");
+      }else{
+        $("#election-status").text( "cancel" );
+        $("#election-status").css('color', 'red');
+        $("#election-status-text").text("Chiusa");
+      }
+       
+     }).catch(function(err) {
+       console.log(err.message);
+     });   
+ },
 
 };
 

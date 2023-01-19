@@ -26,16 +26,16 @@ contract Election is AccessControl {
     // Read/write candidates
     mapping(uint => Candidate) public candidates;
     mapping(address => string) public candidateVoted;
+    
     // Store Candidates Count
-
     uint public candidatesCount;
-    bool public open;
-    Candidate public canditatoVincitore;
+    bool public open; //Mostra se un'elezione è aperta o chiusa
+    string public risultatoElezione; //Risultato elezione "Pareggio" o "Nome candidato"
     
     constructor () public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         inizializzaDatabaseCandidati();
-         open = true; //Elezioni aperte
+        open = true; //Elezioni aperte
     }
 
 
@@ -69,13 +69,25 @@ contract Election is AccessControl {
         require(open == true, "Elezione gia chiuse!"); //Se l'elezione è aperta..
         open = false;
 
-        canditatoVincitore = candidates[1];
-
-        for (uint i = 2; i <= candidatesCount; i++) {
-            if(candidates[i].voteCount > canditatoVincitore.voteCount){
-                canditatoVincitore = candidates[i];
+        uint maxVotes = 0;
+        uint countMaxVotes = 0;
+        Candidate memory candidatoVincitore;
+        for (uint i = 1; i <= candidatesCount; i++) {
+            if(candidates[i].voteCount > maxVotes){
+                maxVotes = candidates[i].voteCount;
+                countMaxVotes = 1;
+                candidatoVincitore = candidates[i];
+            }else if(candidates[i].voteCount == maxVotes){
+                countMaxVotes++;
             }
         }
+        if(countMaxVotes > 1){
+            risultatoElezione = "Pareggio";
+        }
+        else{
+            risultatoElezione = candidatoVincitore.name;
+        }
+
         return true; //Operazione riuscita! 
     }
 

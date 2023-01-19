@@ -64,7 +64,7 @@ App = {
   },
 
   electionIsOpen: function(){
-    web3.eth.getAccounts(function(error, accounts) {
+     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
       }
@@ -75,7 +75,7 @@ App = {
         electionInstance = instance;
 
         return electionInstance.open();
-      }).then(function(result) {
+      }).then(async function(result) {
         if(result == true){
           $("#vota").show();
           App.render();
@@ -125,9 +125,16 @@ App = {
       }).catch((err)=>{
       console.warn("Errrore: "+ err);
    })
-   return electionInstance.canditatoVincitore()
+   return electionInstance.risultatoElezione()
    .then((result) => {
-    $("#Vincitore").text("Il vincitore dell'elezione è "+result[1])
+    console.log(result)
+    if(result === 'Pareggio'){
+      $("#Vincitore").text("L'elezione è finita con un pareggio!")
+    }
+    else{
+      $("#Vincitore").text("Il vincitore dell'elezione è "+result)
+    }
+    
   })
   },
   castVote: function() {
@@ -187,7 +194,6 @@ App = {
 
     var candidatesSelect = $('#candidatesSelect');
     candidatesSelect.empty();
-    console.log("CIAO");
     for (var i = 1; i <= candidatesCount; i++) {
       
       electionInstance.candidates(i).then(function(candidate) {
