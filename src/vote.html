@@ -10,7 +10,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container" style="width: 650px;">
+    <div id="vota" class="container" style="width: 650px;display: none;">
       <div class="row">
         <div class="col-lg-12">
           <h1 class="text-center">Election Results</h1>
@@ -64,6 +64,28 @@
             </form>
             
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="risultati" class="container" style="display: none;">
+      <h1 class="text-center my-5" id="Vincitore"></h1>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Candidates</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome candidato</th>
+                <th>Partito</th>
+                <th>Voti attuali</th>
+              </tr>
+            </thead>
+            <tbody id="candidate-list">
+              <!-- candidate list will be populated here using JavaScript -->
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

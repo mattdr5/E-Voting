@@ -9,6 +9,7 @@
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -41,7 +42,9 @@
               <tr>
                 <th>#</th>
                 <th>Nome candidato</th>
+                <th>Partito</th>
                 <th>Voti attuali</th>
+                <th>Azioni</th>
               </tr>
             </thead>
             <tbody id="candidate-list">
@@ -50,11 +53,15 @@
           </table>
         </div>
         <div class="col-md-6">
-          <h2>Controls</h2>
-          <div class="form-group">
-            <label for="candidate-name">Add Candidate</label>
+          <h2>Funzionalità admin</h2>
+          <div class="form-group" id="add-div">
+            <label for="candidate-name">Nome</label>
             <input type="text" class="form-control" id="candidate-name">
-            <button class="btn btn-primary my-3" onclick="addCandidate()">Add</button>
+            <label for="nome-partito">Partito</label>
+            <input type="text" class="form-control" id="nome-partito">
+            <label for="link">Url immagine</label>
+            <input type="url" class="form-control" id="link">
+            <button id="addCandidate"class="btn btn-primary my-3">Add</button>
           </div>
           <div class="form-group">
             <button id="closeElection" class="btn btn-danger">Close Election</button>

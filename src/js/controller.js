@@ -22,13 +22,13 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('TutorialToken.json', function(data) {
+    $.getJSON('Election.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
-      var TutorialTokenArtifact = data;
-      App.contracts.TutorialToken = TruffleContract(TutorialTokenArtifact);
+      var ElectionArtifact = data;
+      App.contracts.Election = TruffleContract(ElectionArtifact);
 
       // Set the provider for our contract.
-      App.contracts.TutorialToken.setProvider(App.web3Provider);
+      App.contracts.Election.setProvider(App.web3Provider);
 
       // Use our contract to retieve and mark the adopted pets.
       return App.IsAdmin();
@@ -38,7 +38,6 @@ App = {
   },
 
   IsAdmin: function() {
-    var tutorialTokenInstance;
 
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -47,10 +46,9 @@ App = {
 
       var account = accounts[0];
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
-
-        return tutorialTokenInstance.isAdmin(account);
+      App.contracts.Election.deployed().then(function(instance) {
+        ElectionInstance = instance;
+        return ElectionInstance.isOwner(account);
       }).then(function(result) {
         if(result == true)
           window.location.href = "admin.html";

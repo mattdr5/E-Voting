@@ -43,7 +43,10 @@ App = {
   bindEvents: function() {
     $(document).on('click', '#closeElection', App.closeElection);
     $(document).on('click', '#openElection', App.openElection);
+    $(document).on('click', '#addCandidate', App.addCandidate);
+    $(document).on('click', '.remove-candidate', App.removeCandidate);
   },
+
   accountChange: function() {
     var electionInstance;
 
@@ -67,6 +70,7 @@ App = {
     });
   },
   showCandidates : function() {
+    $("#candidate-list").empty();
     var candidateList = $("#candidate-list")
 
     // Load contract data
@@ -84,13 +88,99 @@ App = {
           var partitoImg = candidate[4]
           var voteCount = candidate[2];
 
-          var candidatoTemplate = `<tr><th> ${id}</th><td> ${name} </td><td> ${voteCount} </td></tr>`
+          var candidatoTemplate = `<tr>
+                                    <td>
+                                      <a href="${partitoImg}" target="_blank" rel="noopener noreferrer">
+                                        <img src="${partitoImg}" width="50px" height="50px">
+                                      </a>
+                                    </td>
+                                    <td> ${name} </td>
+                                    <td> ${partitoShortcut} </td>
+                                    <td> ${voteCount} </td>
+                                    <td>
+                                      <button class="btn btn-danger remove-candidate" id="${id}">
+                                      <i class="material-icons">delete</i>
+                                      </button>
+                                    </td>
+                                  </tr>`
           candidateList.append(candidatoTemplate);
           })
         }
       }).catch((err)=>{
       console.warn("Errrore: "+ err);
    })
+  },
+
+  removeCandidate: function() {
+    var id = $(this).attr("id");
+    if(confirm("Are you sure you want to delete this candidate?")){
+        // remove the candidate from the smart contract
+        web3.eth.getAccounts(function(error, accounts) {
+          if (error) {
+            console.log(error);
+          }
+    
+          var account = accounts[0];
+        App.contracts.Election.deployed()
+          .then(function(instance) {
+            
+            electionInstance = instance;
+            return electionInstance.removeCandidate(id, {from : account});
+        })
+          .then(function(result) {
+            alert("Candidato eliminato con successo!!")
+            App.showCandidates();
+          })
+          .catch((err) =>{
+            console.log(err)
+            err.code == 4001 ? alert("Transazione annullata") : alert("Si è verificato un errore");
+          })
+        })
+      }
+    },
+
+  addCandidate : function() {
+
+      const imageUrlRegex = /https?:\/\/[^\s]+\.(jpeg|jpg|png|gif|webp|svg|ico)(?:\?\S+)?/gi;
+      var nome = $("#candidate-name").val();
+      var partito = $("#nome-partito").val();
+      var link = $("#link").val();
+
+      if(nome != '' ) {
+        if(partito != '') {
+          if(imageUrlRegex.test(link)){
+            web3.eth.getAccounts(function(error, accounts) {
+              if (error) {
+                console.log(error);
+              }
+        
+              var account = accounts[0];
+            App.contracts.Election.deployed()
+              .then(function(instance) {
+                
+                electionInstance = instance;
+                return electionInstance.addCandidate(nome, partito, link, {from : account});
+            })
+              .then(function(result) {
+                alert("Candidato aggiunto con successo!!")
+                App.showCandidates();
+              })
+              .catch((err) =>{
+                console.log(err)
+                err.code == 4001 ? alert("Transazione annullata") : alert("Si è verificato un errore");
+              })
+            })
+          } else {
+            alert("formato dell'url non valido deve essere un link di un'immagine")
+          }
+        } else {
+          alert("Il nome del partito non può essere vuoto")
+        }
+        
+      } else {
+        alert("Il nome non può essere vuoto!")
+      }
+     
   },
   closeElection : function() {
 

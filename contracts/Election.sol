@@ -11,7 +11,6 @@ contract Election is AccessControl {
         uint voteCount;
         string partyShortcut;
         string partyFlag;
-        
     }
 
 
@@ -19,6 +18,7 @@ contract Election is AccessControl {
         uint indexed _candidateId,  string candidateName
     );
     event checksoloOwner(address user);
+    event removedCandidateEvent (uint indexed _candidateId);
 
 
     // Store accounts that have voted
@@ -30,17 +30,32 @@ contract Election is AccessControl {
 
     uint public candidatesCount;
     bool public open;
+    Candidate public canditatoVincitore;
     
     constructor () public {
-         inizializzaDatabaseCandidati();
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        inizializzaDatabaseCandidati();
          open = true; //Elezioni aperte
     }
 
 
-    function addCandidate (Candidate memory candidate) private {
+    function addCandidate (string memory nome, string memory partito, string memory logo) public soloOwner {
         candidatesCount ++;
-        candidates[candidatesCount] = Candidate(candidatesCount, candidate.name, 0, candidate.partyShortcut, candidate.partyFlag);
+        candidates[candidatesCount] = Candidate(candidatesCount, nome, 0, partito, logo);
+    }
+
+    function removeCandidate(uint _candidateId) public soloOwner {
+        require(!open, "Elezioni aperte, impossibile rimuovere un candidato");
+        require(_candidateId > 0 && _candidateId <= candidatesCount, "Id candidato non valido!");
+        delete candidates[_candidateId];
+        candidatesCount--;
+        // Shift the candidates' ids down by one starting from the removed candidate's id
+        for (uint i = _candidateId; i <= candidatesCount; i++) {
+            candidates[i] = candidates[i+1];
+        }
+        delete candidates[candidatesCount+1];
+        emit removedCandidateEvent(_candidateId);
+
     }
 
     function openElection() public soloOwner returns (bool){
@@ -53,7 +68,14 @@ contract Election is AccessControl {
     function closeElection() public soloOwner returns (bool){
         require(open == true, "Elezione gia chiuse!"); //Se l'elezione è aperta..
         open = false;
-        
+
+        canditatoVincitore = candidates[1];
+
+        for (uint i = 2; i <= candidatesCount; i++) {
+            if(candidates[i].voteCount > canditatoVincitore.voteCount){
+                canditatoVincitore = candidates[i];
+            }
+        }
         return true; //Operazione riuscita! 
     }
 
@@ -71,13 +93,11 @@ contract Election is AccessControl {
       return hasRole(DEFAULT_ADMIN_ROLE, account);
     }
 
-    function vote (uint _candidateId, uint _balance) public {
+    function vote (uint _candidateId) public {
 
         require(open, "Elezioni terminate");
         // Requisiti per il votante
         require(!voters[msg.sender], "Hai gia votato");
-        
-        require(_balance > 0, "Fondi insufficienti");
 
         // Requisiti per un candidato
         require(_candidateId > 0 && _candidateId <= candidatesCount);
@@ -130,10 +150,10 @@ contract Election is AccessControl {
             partyFlag: "https://www.metropolisweb.it/metropolisweb/news/wp-content/uploads/sites/2/2023/01/messina-.jpg"
         });
 
-        addCandidate(candidate_1);
-        addCandidate(candidate_2);
-        addCandidate(candidate_3);
-        addCandidate(candidate_4);
+        addCandidate(candidate_1.name,candidate_1.partyShortcut, candidate_1.partyFlag);
+        addCandidate(candidate_2.name,candidate_2.partyShortcut, candidate_2.partyFlag);
+        addCandidate(candidate_3.name,candidate_3.partyShortcut, candidate_3.partyFlag);
+        addCandidate(candidate_4.name,candidate_4.partyShortcut, candidate_4.partyFlag);
 
    
     }

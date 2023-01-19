@@ -6,6 +6,10 @@ App = {
 
   init: function() {
 
+    window.ethereum.on('accountsChanged', function (accounts) {
+      App.accountChange();
+    });
+
     return App.initWeb3();
   },
 
@@ -32,9 +36,99 @@ App = {
 
       App.listenForEvents();
       
-      return App.render();
+      return App.electionIsOpen();
     });
 
+  },
+  accountChange: function() {
+    var electionInstance;
+
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.Election.deployed().then(function(instance) {
+        electionInstance = instance;
+
+        return electionInstance.isOwner(account);
+      }).then(function(result) {
+        if(result == true)
+          window.location.href = "admin.html";
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
+  electionIsOpen: function(){
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.Election.deployed().then(function(instance) {
+        electionInstance = instance;
+
+        return electionInstance.open();
+      }).then(function(result) {
+        if(result == true){
+          $("#vota").show();
+          App.render();
+        }else{
+          $("#vota").hide();
+          $("#risultati").show();
+          App.risultati();
+        }
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+    
+  },
+
+  risultati: function(){
+    var candidateList = $("#candidate-list")
+
+    // Load contract data
+    App.contracts.Election.deployed()
+    .then(function(instance) {
+        electionInstance = instance;
+        return electionInstance.candidatesCount();
+    })
+    .then(function(candidatesCount) {
+      for (var i = 1; i <= candidatesCount; i++) {
+          electionInstance.candidates(i).then(function(candidate) {
+          var id = candidate[0];
+          var name = candidate[1];
+          var partitoShortcut = candidate[3]
+          var partitoImg = candidate[4]
+          var voteCount = candidate[2];
+
+          var candidatoTemplate = `<tr>
+                                    <td>
+                                      <a href="${partitoImg}" target="_blank" rel="noopener noreferrer">
+                                        <img src="${partitoImg}" width="50px" height="50px">
+                                      </a>
+                                    </td>
+                                    <td> ${name} </td>
+                                    <td> ${partitoShortcut} </td>
+                                    <td> ${voteCount} </td>
+                                  </tr>`
+          candidateList.append(candidatoTemplate);
+          })
+        }
+      }).catch((err)=>{
+      console.warn("Errrore: "+ err);
+   })
+   return electionInstance.canditatoVincitore()
+   .then((result) => {
+    $("#Vincitore").text("Il vincitore dell'elezione è "+result[1])
+  })
   },
   castVote: function() {
     var candidateId = $('#candidatesSelect').val();
