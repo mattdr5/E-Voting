@@ -230,7 +230,7 @@ App = {
       });
     }
     return electionInstance.voters(App.account);
-  }).then(function(hasVoted) {
+  }).then(async function(hasVoted) {
     // Do not allow a user to vote
     if(hasVoted) {
       loader.hide();
@@ -244,7 +244,7 @@ App = {
     
 
   })
-    .then(function(getCandidateVoted){
+    .then(async function(getCandidateVoted){
       if(getCandidateVoted){
         content.hide()
         loader.show()

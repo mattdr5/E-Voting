@@ -149,10 +149,10 @@ contract Election is AccessControl {
         });
         Candidate memory candidate_3 = Candidate({
             id: 3,
-            name: "Donald Trump",
+            name: "Carmine D'Angelo",
             voteCount: 0,
-            partyShortcut: "RPB",
-            partyFlag: "https://www.pngmart.com/files/16/Donald-Trump-PNG-File.png"
+            partyShortcut: "NCO",
+            partyFlag: "https://github.com/mattdr5/SimpleE-VotingSystem/blob/main/src/images/cardano.jpg?raw=true"
         });
         Candidate memory candidate_4 = Candidate({
             id: 4,
