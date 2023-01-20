@@ -26,16 +26,18 @@ contract Election is AccessControl {
     // Read/write candidates
     mapping(uint => Candidate) public candidates;
     mapping(address => string) public candidateVoted;
+
     
     // Store Candidates Count
     uint public candidatesCount;
     bool public open; //Mostra se un'elezione è aperta o chiusa
     string public risultatoElezione; //Risultato elezione "Pareggio" o "Nome candidato"
+    address[] public listaVotanti;
     
     constructor () public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         inizializzaDatabaseCandidati();
-        open = false; //Elezioni aperte
+        open = false; //Elezione chiuse
     }
 
 
@@ -59,12 +61,25 @@ contract Election is AccessControl {
 
     }
 
-    function resetCandidate() public soloOwner {
+    function resetElection() public soloOwner {
         require(!open, "Elezioni aperte, impossibile rimuovere i candidati");
+        //Rimuovo io
         for (uint i = 0; i < candidatesCount; i++) {
             delete candidates[i];
         }
         candidatesCount = 0;
+        risultatoElezione = "";
+        
+
+        for (uint i = 0; i < listaVotanti.length; i++ ){
+            voters[listaVotanti[i]] = false; //Reset voti
+            candidateVoted[listaVotanti[i]] = ""; //Reset canidati votati
+        }
+
+        //Reset lista votanti
+        address[] memory newListaVotanti;
+        listaVotanti = newListaVotanti;
+
     }
 
     function openElection() public soloOwner returns (bool){
@@ -128,10 +143,13 @@ contract Election is AccessControl {
         // Aggiorno il voto del candidato
         candidates[_candidateId].voteCount++;
 
-        // Aggiornamente del candidato votato!
+        // Aggiornamento del candidato votato!
         candidateVoted[msg.sender] = candidates[_candidateId].name;
+
+        // Aggiornamento della lista dei votanti!
+        listaVotanti.push(msg.sender);
         
-        // trigger voted event
+        // lancio evento voto
         emit votedEvent(_candidateId,  candidates[_candidateId].name);
     }
 
@@ -149,10 +167,10 @@ contract Election is AccessControl {
         });
         Candidate memory candidate_2 = Candidate({
             id: 2,
-            name: "Matteo Renzi",
+            name: "Matteo Della Rocca",
             voteCount: 0,
-            partyShortcut: "IV",
-            partyFlag: "https://www.vistosulweb.com/wp-content/uploads/2021/02/safe_image.jpg"
+            partyShortcut: "Freedom",
+            partyFlag: "./images/mdr-colorato.jpg"
             
         });
         Candidate memory candidate_3 = Candidate({

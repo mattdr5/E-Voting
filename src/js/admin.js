@@ -45,7 +45,7 @@ App = {
     $(document).on('click', '#closeElection', App.closeElection);
     $(document).on('click', '#openElection', App.openElection);
     $(document).on('click', '#addCandidate', App.addCandidate);
-    $(document).on('click', '#resetCandidate', App.resetCandidate);
+    $(document).on('click', '#resetCandidate', App.resetElezione);
     $(document).on('click', '.remove-candidate', App.removeCandidate);
   },
 
@@ -296,7 +296,7 @@ App = {
      });   
  },
 
- resetCandidate: function(){
+ resetElezione: function(){
 
   web3.eth.getAccounts(function(error, accounts) {
     if (error) {
@@ -316,7 +316,7 @@ App = {
     if( result === true){
       alert("Elezione aperta impossibile rimuovere")
     } else {
-      return electionInstance.resetCandidate({from : account});
+      return electionInstance.resetElection({from : account});
 
     }
   }).then(function(result) {

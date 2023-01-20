@@ -126,10 +126,14 @@ App = {
       console.warn("Errrore: "+ err);
    })
    return electionInstance.risultatoElezione()
-   .then((result) => {
+   .then(async (result) => {
     console.log(result)
     if(result === 'Pareggio'){
       $("#Vincitore").text("L'elezione è finita con un pareggio!")
+    }
+    else if(result === ""){
+      $("#risultati").hide();
+      $("#empty-elect").show();
     }
     else{
       $("#Vincitore").text("Il vincitore dell'elezione è "+result)
@@ -169,7 +173,7 @@ App = {
     var content = $("#content");
     var candidateVoted = $("#candidateVoted");
     var candidateVotedName = $("#candidateVotedName");
-    
+
     loader.show();
     content.hide();
     
