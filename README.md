@@ -25,19 +25,26 @@ In questo progetto cercheremo di sfruttare la blockchain per correggere le caren
 
 ## Implementazione del sistema di votazione:
 
-### Requisiti:
-- Smart Contract costituiti da tutte le regole e protocolli necessari per il voto elettronico.
-- Blockchain Network per implementare il Contratto. Abbiamo utilizzato Ganache per il nostro contratto.
-- Sito Web per l'interfaccia utente in cui l'elettore può votare. Abbiamo creato una pagina web con HTML, CSS e Javascript
+### Ruoli considerati:
+- Organizzatore dell'elezione
+- Elettore
 
-### Assunzioni:
-- Solo chi ha organizzato le elezioni può avviare/aggiornare le tempistiche delle votazioni.
+### Requisiti funzionali:
+- L'organizzatore dell'elezione può aggiungere/eliminare candidati;
+- L'organizzatore dell'elezione può resettare l'elezione per poterne creare un'altra;
+- L'organizzatore dell'elezione può aprire/chiudere le elezioni;
+- L'elettore può votare una sola volta;
+- L'elettore può visualizzare i risulati dell'elezione (la quale può finire con la vittoria di un candidato o un pareggio).
 
-### Chi può votare:
-- Ad ogni elettore è concesso un solo voto. 
+### Requisiti non funzionali:
+- Smart Contract costituiti da tutte le regole e protocolli necessari per il voto elettronico;
+- Blockchain Network per implementare il Contratto. Per simulare la Blockchain Network è stato usato Ganache;
+- Sito Web per l'interfaccia utente in cui l'elettore può votare. Pagina web creata con HTML, CSS e Javascript;
+- Gestione dell'access control con openzeppelin;
 
-### Chi non può votare:
-- Chi ha già votato.
+### Sviluppi futuri:
+- Gestione di più elezioni contemporaneamente;
+- Miglioramenti interfaccia grafica
 
 ## Membri del progetto
 - [Matteo Della Rocca](https://github.com/mattdr5)<br />
