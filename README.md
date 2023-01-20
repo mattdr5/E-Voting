@@ -1,4 +1,5 @@
 # SimpleE-VotingSystem
+![Alt text](https://user-images.githubusercontent.com/71890086/213729987-aa391592-b952-499f-b708-f02570e0e1e2.png)
 ## Introduzione
 Questo è un progetto di gruppo per l'esame di Sicurezza dei Dati 2022/2023 presso l'Università degli Studi di Salerno, Laurea Magistrale in Informatica.  
 
