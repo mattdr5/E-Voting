@@ -35,11 +35,12 @@ contract Election is AccessControl {
     constructor () public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         inizializzaDatabaseCandidati();
-        open = true; //Elezioni aperte
+        open = false; //Elezioni aperte
     }
 
 
     function addCandidate (string memory nome, string memory partito, string memory logo) public soloOwner {
+        require(!open, "Elezioni aperte, impossibile aggiungere il candidato!");
         candidatesCount ++;
         candidates[candidatesCount] = Candidate(candidatesCount, nome, 0, partito, logo);
     }
@@ -58,10 +59,17 @@ contract Election is AccessControl {
 
     }
 
+    function resetCandidate() public soloOwner {
+        require(!open, "Elezioni aperte, impossibile rimuovere i candidati");
+        for (uint i = 0; i < candidatesCount; i++) {
+            delete candidates[i];
+        }
+        candidatesCount = 0;
+    }
+
     function openElection() public soloOwner returns (bool){
         require(open == false, "Elezione gia aperta!"); //Se l'elezione è chiusa..
         open = true;
-
         return true; //Operazione riuscita!
     }
 

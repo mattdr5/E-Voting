@@ -45,6 +45,7 @@ App = {
     $(document).on('click', '#closeElection', App.closeElection);
     $(document).on('click', '#openElection', App.openElection);
     $(document).on('click', '#addCandidate', App.addCandidate);
+    $(document).on('click', '#resetCandidate', App.resetCandidate);
     $(document).on('click', '.remove-candidate', App.removeCandidate);
   },
 
@@ -115,7 +116,7 @@ App = {
 
   removeCandidate: function() {
     var id = $(this).attr("id");
-    if(confirm("Are you sure you want to delete this candidate?")){
+    if(confirm("Sei sicuro di voler rimouovere questo candidato?")){
         // remove the candidate from the smart contract
         web3.eth.getAccounts(function(error, accounts) {
           if (error) {
@@ -127,11 +128,21 @@ App = {
           .then(function(instance) {
             
             electionInstance = instance;
-            return electionInstance.removeCandidate(id, {from : account});
+            return electionInstance.open()
+            
         })
           .then(function(result) {
-            alert("Candidato eliminato con successo!!")
-            App.showCandidates();
+            if(result === true ){
+              alert("Elezione aperta impossibile eliminare candidato");
+            } else {
+              return electionInstance.removeCandidate(id, {from : account});
+            }
+          }).then(function(result) {
+            if(result != undefined){
+              alert("Candidato eliminato con successo!!")
+              App.showCandidates();
+            }
+         
           })
           .catch((err) =>{
             console.log(err)
@@ -161,11 +172,20 @@ App = {
               .then(function(instance) {
                 
                 electionInstance = instance;
-                return electionInstance.addCandidate(nome, partito, link, {from : account});
-            })
+                return electionInstance.open()
+                
+            }).then(function(result) {
+                if( result === true){
+                  alert("Elezione aperta impossibile aggiungere!")
+                } else {
+                  return electionInstance.addCandidate(nome, partito, link, {from : account});
+                }
+              })
               .then(function(result) {
-                alert("Candidato aggiunto con successo!!")
-                App.showCandidates();
+                if(result != undefined){
+                  alert("Candidato aggiunto con successo!!")
+                  App.showCandidates();
+                }
               })
               .catch((err) =>{
                 console.log(err)
@@ -196,11 +216,20 @@ App = {
       App.contracts.Election.deployed()
       .then(function(instance) {
         electionInstance = instance;
+        return electionInstance.open();
+     }).then(function(result) {
+
+      if( result === false){
+        alert("Elezione già chiusa")
+      } else {
         return electionInstance.closeElection({from : account});
-     })
+      }
+    })
      .then(function(result) {
-        alert("Elezione chiusa con successo!!")
-        App.electionIsOpen();
+        if(result != undefined){
+          alert("Elezione chiusa con successo!!")
+          App.electionIsOpen()
+        }
      
       })
       .catch((err) =>{
@@ -220,12 +249,23 @@ App = {
       App.contracts.Election.deployed()
       .then(function(instance) {
         electionInstance = instance;
-        return electionInstance.openElection({from : account});
+        return electionInstance.open();
+        
      })
      .then(function(result) {
+
+      if( result === true){
+        alert("Elezione già aperta")
+      } else {
+        return electionInstance.openElection({from : account});
+
+      }
+    }).then(function(result) {
+      if(result != undefined){
         alert("Elezione aperta con successo!!")
-        App.electionIsOpen();
-      })
+        App.electionIsOpen()
+      }
+    })
       .catch((err) =>{
         err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione già aperta!...!");
       })
@@ -255,6 +295,44 @@ App = {
        console.log(err.message);
      });   
  },
+
+ resetCandidate: function(){
+
+  web3.eth.getAccounts(function(error, accounts) {
+    if (error) {
+      console.log(error);
+    }
+
+    var account = accounts[0];
+
+    App.contracts.Election.deployed()
+    .then(function(instance) {
+      electionInstance = instance;
+      return electionInstance.open();
+      
+   })
+   .then(function(result) {
+
+    if( result === true){
+      alert("Elezione aperta impossibile rimuovere")
+    } else {
+      return electionInstance.resetCandidate({from : account});
+
+    }
+  }).then(function(result) {
+    if(result != undefined){
+      alert("Rimozione avvenuta!!")
+      App.showCandidates();
+    }
+  })
+    .catch((err) =>{
+      err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione aperta!...!");
+    })
+  }).catch((err)=> {
+    alert("Operazione annullata!");
+    console.log(err)
+  })
+ }
 
 };
 
