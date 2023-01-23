@@ -5,10 +5,11 @@ App = {
   account: '0x0',
 
   init: function() {
-
     window.ethereum.on('accountsChanged', function (accounts) {
       App.accountChange();
     });
+
+   
 
     return App.initWeb3();
   },
@@ -39,16 +40,17 @@ App = {
       return App.electionIsOpen();
     });
 
-  },
+  }
+  ,
   accountChange: function() {
     var electionInstance;
-
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
       }
 
       var account = accounts[0];
+      console.log(account)
 
       App.contracts.Election.deployed().then(function(instance) {
         electionInstance = instance;
@@ -57,8 +59,12 @@ App = {
       }).then(function(result) {
         if(result == true)
           window.location.href = "admin.html";
+        else 
+          window.location.href = "vote.html";
       }).catch(function(err) {
-        console.log(err.message);
+        console.log(err.message);  
+        window.location.href = "index.html"
+        
       });
     });
   },

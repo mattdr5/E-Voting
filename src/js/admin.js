@@ -68,6 +68,7 @@ App = {
           window.location.href = "vote.html";
       }).catch(function(err) {
         console.log(err.message);
+        window.location.href = "index.html"
       });
     });
   },

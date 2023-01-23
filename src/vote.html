@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SimpleE-VotingSystem</title>
+    <title>E-Voting</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="images/logo.png">
   </head>
   <body>
     <div id="vota" class="container" style="width: 650px;display: none;">
@@ -18,8 +19,8 @@
             <p class="text-center">Caricamento...</p>
           </div>
           <div id="candidateVoted" class="col-12 text-center">
-            <div class="col-6">
-              <h2 class="text-center">Grazie per avere contribuito all'elezione!</h2>
+            <div class="col-md-12">
+              <h4 class="text-center">Grazie per avere contribuito all'elezione!</h4>
               <h5>Account: <span id ="voterName" class="text-ceter" style="font-size: 16px;"></span></h5>
               
             </div> 
@@ -28,7 +29,7 @@
             <div class="alert alert-success" role="alert">
               <p id ="candidateVotedName" class="text-ceter" style="font-size: 40px;"></p>
             </div>
-            <h5>Attendi la chiusura delle elezioni per visualizzare i risultati...</h5>   
+            <h5 class="text-center lead">Attendi la chiusura delle elezioni per visualizzare i risultati...</h5>   
           </div>
           <div id="content" style="display: none;">
             <div class="row">
@@ -63,21 +64,15 @@
         </div>
       </div>
     </div>
-    <div id="empty-elect" class="container" style="display: none;">
-      <div class="text-center row">
-          <div class="col-md-12">
-              <div class="error-template">
-                  <h1>
-                      Oops!</h1>
-                  <h2>
-                     Nessuna elezione attiva!</h2>
-                  <div class="error-details">
-                      Non ci sono elezioni attive...
-                  </div>
-              </div>
-          </div>
+    <div id="empty-elect" class="container" style="display: none;min-height: 100vh">
+      <div class="row justify-content-center">
+        <div class="col-md-12 text-center">
+          <span class="display-1 d-block">Oops</span>
+          <img src="./images/Closed Stores-rafiki.png" class="img-fluid" style= "max-height: 315px;" alt="img">
+          <div class="mb-4 lead">Attualmente non ci sono elezioni attive....</div>
+        </div>
       </div>
-  </div>
+    </div>
     <div id="risultati" class="container" style="display: none;">
       <h1 class="text-center my-5" id="Vincitore"></h1>
       <div class="row">

@@ -4,6 +4,11 @@ App = {
   
 
   init: function() {
+    
+    window.ethereum.on('accountsChanged', function (accounts) {
+      App.accountChange();
+    });
+
     return App.initWeb3();
   },
 
@@ -36,7 +41,32 @@ App = {
 
     //return App.bindEvents();
   },
+  accountChange: function() {
+    var electionInstance;
 
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+  
+
+      App.contracts.Election.deployed().then(function(instance) {
+        electionInstance = instance;
+
+        return electionInstance.isOwner(account);
+      }).then(function(result) {
+        if(result == true)
+          window.location.href = "admin.html";
+        else 
+        window.location.href = "vote.html";
+      }).catch(function(err) {
+        console.log(err.message);
+        window.location.href = "index.html"
+      });
+    });
+  },
   IsAdmin: function() {
 
     web3.eth.getAccounts(function(error, accounts) {
@@ -56,6 +86,7 @@ App = {
           window.location.href = "vote.html";
       }).catch(function(err) {
         console.log(err.message);
+        
       });
     });
   }

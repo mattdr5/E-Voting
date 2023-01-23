@@ -4,6 +4,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 
 contract Election is AccessControl {
+    
     // Model a Candidate
     struct Candidate {
         uint id;
@@ -36,8 +37,10 @@ contract Election is AccessControl {
     
     constructor () public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        candidatesCount = 0;
+        risultatoElezione = "";
         inizializzaDatabaseCandidati();
-        open = false; //Elezione chiuse
+        open = true; //Inizialmente elezione predefinita aperta
     }
 
 
@@ -188,10 +191,14 @@ contract Election is AccessControl {
             partyFlag: "https://www.metropolisweb.it/metropolisweb/news/wp-content/uploads/sites/2/2023/01/messina-.jpg"
         });
 
-        addCandidate(candidate_1.name,candidate_1.partyShortcut, candidate_1.partyFlag);
-        addCandidate(candidate_2.name,candidate_2.partyShortcut, candidate_2.partyFlag);
-        addCandidate(candidate_3.name,candidate_3.partyShortcut, candidate_3.partyFlag);
-        addCandidate(candidate_4.name,candidate_4.partyShortcut, candidate_4.partyFlag);
+        candidatesCount ++;
+        candidates[candidatesCount] = Candidate(candidatesCount, candidate_1.name, candidate_1.voteCount, candidate_1.partyShortcut, candidate_1.partyFlag);
+        candidatesCount ++;
+        candidates[candidatesCount] = Candidate(candidatesCount, candidate_2.name,  candidate_2.voteCount, candidate_2.partyShortcut, candidate_2.partyFlag);
+        candidatesCount ++;
+        candidates[candidatesCount] = Candidate(candidatesCount, candidate_3.name, candidate_3.voteCount, candidate_3.partyShortcut, candidate_3.partyFlag);
+        candidatesCount ++;
+        candidates[candidatesCount] = Candidate(candidatesCount ,candidate_4.name, candidate_4.voteCount, candidate_4.partyShortcut, candidate_4.partyFlag);
 
    
     }
