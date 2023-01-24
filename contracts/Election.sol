@@ -4,7 +4,9 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 
 contract Election is AccessControl {
-    
+
+    bytes32 public constant VOTER_ROLE = keccak256("VOTER_ROLE");
+
     // Model a Candidate
     struct Candidate {
         uint id;
@@ -19,6 +21,7 @@ contract Election is AccessControl {
         uint indexed _candidateId,  string candidateName
     );
     event checksoloOwner(address user);
+    event ChecksoloVoter(address user);
     event removedCandidateEvent (uint indexed _candidateId);
 
 
@@ -40,6 +43,7 @@ contract Election is AccessControl {
         candidatesCount = 0;
         risultatoElezione = "";
         inizializzaDatabaseCandidati();
+        setVotersRole();
         open = true; //Inizialmente elezione predefinita aperta
     }
 
@@ -127,11 +131,20 @@ contract Election is AccessControl {
       _;
     }
 
+    modifier soloVoter() {
+      emit ChecksoloVoter(msg.sender);
+      require(isVoter(msg.sender), "Caller is not a voter");
+      _;
+    }
     function isOwner(address account) public virtual view returns (bool) {
       return hasRole(DEFAULT_ADMIN_ROLE, account);
     }
 
-    function vote (uint _candidateId) public {
+    function isVoter(address account) public virtual view returns (bool) {
+      return hasRole(VOTER_ROLE, account);
+    }
+
+    function vote (uint _candidateId) public soloVoter {
 
         require(open, "Elezioni terminate");
         // Requisiti per il votante
@@ -201,6 +214,18 @@ contract Election is AccessControl {
         candidates[candidatesCount] = Candidate(candidatesCount ,candidate_4.name, candidate_4.voteCount, candidate_4.partyShortcut, candidate_4.partyFlag);
 
    
+    }
+
+    function setVotersRole() internal {
+        _setupRole(VOTER_ROLE, 0x1a8F33524Ac8642f2a8aF58444354Cd7dE75DcDa);
+        _setupRole(VOTER_ROLE, 0xC7e1f5a46f4ea402242a01215C92Fa05040Aa3C5);
+        _setupRole(VOTER_ROLE, 0x3BA20119f0F6f4bCF30E570CFDf4fb8082f982b8);
+        _setupRole(VOTER_ROLE, 0x6b543d4B4B411dbe3373f31E002c85eC7285f81C);
+        _setupRole(VOTER_ROLE, 0xb0950983E2972c6ee556414Eb9843A002c83f55D);
+        _setupRole(VOTER_ROLE, 0xed778A60005FE6545b16668271184c3649E7B405);
+        _setupRole(VOTER_ROLE, 0x8cf71Aa476700f12AE3C61E99bF143dcd833A97D);
+        _setupRole(VOTER_ROLE, 0x5083b9406b017ae080229a91978F079A126e875D);
+        _setupRole(VOTER_ROLE, 0x2f85Bd106166D9964f15B0D432F65Fd4b373412A);
     }
 }
 
