@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -23,6 +24,7 @@ contract Election is AccessControl {
     event checksoloOwner(address user);
     event ChecksoloVoter(address user);
     event removedCandidateEvent (uint indexed _candidateId);
+    event CandidatoAggiunto(Candidate candidato);
 
 
     // Store accounts that have voted
@@ -38,7 +40,7 @@ contract Election is AccessControl {
     string public risultatoElezione; //Risultato elezione "Pareggio" o "Nome candidato"
     address[] public listaVotanti;
     
-    constructor () public {
+    constructor (){
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         candidatesCount = 0;
         risultatoElezione = "";
@@ -51,7 +53,9 @@ contract Election is AccessControl {
     function addCandidate (string memory nome, string memory partito, string memory logo) public soloOwner {
         require(!open, "Elezioni aperte, impossibile aggiungere il candidato!");
         candidatesCount ++;
-        candidates[candidatesCount] = Candidate(candidatesCount, nome, 0, partito, logo);
+        Candidate memory candidato = Candidate(candidatesCount, nome, 0, partito, logo);
+        candidates[candidatesCount] = candidato;
+        emit CandidatoAggiunto(candidato);
     }
 
     function removeCandidate(uint _candidateId) public soloOwner {
@@ -121,7 +125,7 @@ contract Election is AccessControl {
         return true; //Operazione riuscita! 
     }
 
-    function isElectionOpen() public returns (bool){
+    function isElectionOpen() public virtual view returns (bool){
         return open;
     }
 
