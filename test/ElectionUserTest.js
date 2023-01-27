@@ -75,22 +75,26 @@ contract('Election', function (accounts) {
         });
 
 
-        /*
-        it('Simulazione votazione', async function () {
+        it('Simulazione votazione con vincitore', async function () {
             expect(await myElection.vote(3,{ from: voters[2] }));
             expect(await myElection.vote(3,{ from: voters[1] }));
             expect(await myElection.vote(3,{ from: voters[3] }));
-            expect(await myElection.vote(2,{ from: voters[4] }));
-
+            expect(await myElection.vote(1,{ from: voters[4] }));
             expect(await myElection.closeElection( {from: admin}));
 
-            myElection.risultatoElezione().then(async (result) => {
-                expect(result).equal("2");
-                
-                
-            });
+            expect(await myElection.risultatoElezione()).equal("Carmine D'Angelo");
+            
         });
-        */
+        
+        it('Simulazione votazione con pareggio', async function () {
+            expect(await myElection.openElection( {from: admin}));
+            expect(await myElection.vote(1,{ from: voters[5] }));
+            
+            expect(await myElection.closeElection( {from: admin}));
+
+            expect(await myElection.risultatoElezione()).equal("Pareggio");
+            
+        });
         
 
     });
