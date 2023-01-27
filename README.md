@@ -31,11 +31,15 @@ In questo progetto cercheremo di sfruttare la blockchain per correggere le caren
 - Elettore
 
 ### Requisiti funzionali:
-- L'organizzatore dell'elezione può aggiungere/eliminare candidati;
-- L'organizzatore dell'elezione può resettare l'elezione per poterne creare un'altra;
-- L'organizzatore dell'elezione può aprire/chiudere le elezioni;
-- L'elettore può votare una sola volta;
-- L'elettore può visualizzare i risulati dell'elezione (la quale può finire con la vittoria di un candidato o un pareggio).
+- L'organizzatore dell'elezione deve poter aggiungere candidati;
+-	L'organizzatore dell'elezione deve poter eliminare candidati;
+-	L'organizzatore dell'elezione deve poter resettare l'elezione per poterne creare un'altra;
+-	L'organizzatore dell'elezione deve poter aprire le elezioni;
+-	L'organizzatore dell'elezione deve poter chiudere le elezioni;
+-	L'elettore deve poter votare una sola volta;
+-	L'elettore deve poter visualizzare i risultati dell'elezione;
+-	L’elettore e l’organizzatore devono poter visualizzare i candidati.
+
 
 ### Requisiti non funzionali:
 - Smart Contract costituiti da tutte le regole e protocolli necessari per il voto elettronico;
