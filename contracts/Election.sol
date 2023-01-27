@@ -25,6 +25,7 @@ contract Election is AccessControl {
     event ChecksoloVoter(address user);
     event removedCandidateEvent (uint indexed _candidateId);
     event CandidatoAggiunto(Candidate candidato);
+    event resetElectionEvent();
 
 
     // Store accounts that have voted
@@ -90,7 +91,7 @@ contract Election is AccessControl {
         //Reset lista votanti
         address[] memory newListaVotanti;
         listaVotanti = newListaVotanti;
-
+        emit resetElectionEvent();
     }
 
     function openElection() public soloOwner returns (bool){
@@ -100,7 +101,7 @@ contract Election is AccessControl {
     }
 
     function closeElection() public soloOwner returns (bool){
-        require(open == true, "Elezione gia chiuse!"); //Se l'elezione è aperta..
+        require(open == true, "Elezione gia chiusa!"); //Se l'elezione è aperta..
         open = false;
 
         uint maxVotes = 0;
@@ -137,7 +138,7 @@ contract Election is AccessControl {
 
     modifier soloVoter() {
       emit ChecksoloVoter(msg.sender);
-      require(isVoter(msg.sender), "Caller is not a voter");
+      require(isVoter(msg.sender), "Funzione solo per gli elettori");
       _;
     }
     function isOwner(address account) public virtual view returns (bool) {
@@ -155,7 +156,7 @@ contract Election is AccessControl {
         require(!voters[msg.sender], "Hai gia votato");
 
         // Requisiti per un candidato
-        require(_candidateId > 0 && _candidateId <= candidatesCount);
+        require(_candidateId > 0 && _candidateId <= candidatesCount, "il candidato scelto non esiste");
 
         // Ricordo che chi vota non può più votare
         voters[msg.sender] = true;
