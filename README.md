@@ -3,7 +3,7 @@
 ## Introduzione
 Questo è un progetto di gruppo per l'esame di Sicurezza dei Dati 2022/2023 presso l'Università degli Studi di Salerno, Laurea Magistrale in Informatica.  
 
-###s Blockchain utilizzata per testare il sistema
+### Blockchain utilizzata per testare il sistema
 All'interno della cartella workspace-ganache è possibile trovare la blockchain di test utilizzata per
 testare il nostro sistema. Se si vuole testare il sistema senza configurare nulla basta importare il
 workspache in ganache.
