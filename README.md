@@ -3,6 +3,10 @@
 ## Introduzione
 Questo è un progetto di gruppo per l'esame di Sicurezza dei Dati 2022/2023 presso l'Università degli Studi di Salerno, Laurea Magistrale in Informatica.  
 
+## Blockchain di test utilizzata
+All'interno della cartella workspace-ganache è possibile trovare la blockchain di test utilizzata per
+testare il nostro sistema. Se si vuole testare il sistema senza configurare nulla basta importare il
+workspache in ganache.
 
 ## Perchè questo progetto? 
 Questo progetto è stato preso in considerazione in quanto pensiamo che l'integrità elettorale sia essenziale per un paese democratico e per la fiducia degli elettori nel proprio stato. I metodi di voto politico possono essere cruciali in questo senso, infatti, dal punto di vista del governo, le tecnologie di voto elettronico possono aumentare la partecipazione e la fiducia degli elettori e riaccendere l'interesse per il sistema di voto.
