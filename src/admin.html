@@ -8,8 +8,12 @@
     <title>Dashboard - Admin</title>
 
     <!-- Bootstrap -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/confirmStyle.css">
+  <link rel="stylesheet" href="./css/successStyle.css">
+  <link rel="stylesheet" href="./css/errorStyle.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="icon" href="images/logo.png">
   </head>
   <body>
@@ -69,7 +73,71 @@
         </div>
       </div>
     </div>
-  </body>
+ 
+  
+    <!-- Modal confirm -->
+    <div id="confirmModal" class="modal fade" data-toggle="modal">
+      <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>						
+            <h4 class="modal-title w-100">Conferma operazione</h4>	
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p>Sei sicuro di voler rimouovere il candidato?</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button id="chiudiConfirm" type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
+            <button id="cancella" type="button" class="btn btn-danger">Conferma</button>
+          </div>
+        </div>
+      </div>
+    </div>  
+
+
+    <!-- Modal success -->
+    <div id="successModal" class="modal fade" data-toggle="modal">
+      <div class="modal-dialog modal-confirmS">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="icon-box">
+              <i class="material-icons">&#xE876;</i>
+            </div>				
+            <h4 class="modal-title w-100">Operazione Eseguita!</h4>	
+          </div>
+          <div class="modal-body">
+            <p class="text-center" id="successText"></p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success btn-block" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div> 
+
+    <!-- Modal error -->
+    <div id="errorModal" class="modal fade">
+      <div class="modal-dialog modal-confirmF">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>				
+            <h4 class="modal-title w-100">Operazione non eseguita!</h4>	
+          </div>
+          <div class="modal-body">
+            <p class="text-center" id="errorText">.</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-danger btn-block" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>    
+
 
     <!-- jQuery & Popper (necessary for Bootstrap's JavaScript plugins) -->
     <script src="./js/lib/jquery.min.js"></script>

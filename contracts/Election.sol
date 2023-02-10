@@ -24,7 +24,7 @@ contract Election is AccessControl {
     event checksoloOwner(address user);
     event ChecksoloVoter(address user);
     event removedCandidateEvent (uint indexed _candidateId);
-    event CandidatoAggiunto(Candidate candidato);
+    event CandidatoAggiunto(bool open);
     event resetElectionEvent();
 
 
@@ -56,7 +56,7 @@ contract Election is AccessControl {
         candidatesCount ++;
         Candidate memory candidato = Candidate(candidatesCount, nome, 0, partito, logo);
         candidates[candidatesCount] = candidato;
-        emit CandidatoAggiunto(candidato);
+        emit CandidatoAggiunto(open);
     }
 
     function removeCandidate(uint _candidateId) public soloOwner {

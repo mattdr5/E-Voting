@@ -117,41 +117,67 @@ App = {
 
   removeCandidate: function() {
     var id = $(this).attr("id");
-    if(confirm("Sei sicuro di voler rimouovere questo candidato?")){
-        // remove the candidate from the smart contract
+    var operazioneCancellaEseguita = 0;
+    
+
+    
+    $("#confirmModal").modal("show");
+    
+    $("#cancella").on("click", function(){
+      $("#chiudiConfirm").click();
+      operazioneCancellaEseguita = 1;
+    })
+
+    $('#confirmModal').on('hidden.bs.modal', function () {
+      if (operazioneCancellaEseguita == 1){
         web3.eth.getAccounts(function(error, accounts) {
           if (error) {
             console.log(error);
           }
     
           var account = accounts[0];
-        App.contracts.Election.deployed()
-          .then(function(instance) {
-            
-            electionInstance = instance;
-            return electionInstance.open()
-            
-        })
+          App.contracts.Election.deployed()
+            .then(function(instance) {
+              electionInstance = instance;
+              return electionInstance.open()
+          })
           .then(function(result) {
             if(result === true ){
-              alert("Elezione aperta impossibile eliminare candidato");
+
+              $("#errorText").html("Elezione aperta impossibile eliminare candidato!!")
+              $("#errorModal").modal("show");
+          
             } else {
               return electionInstance.removeCandidate(id, {from : account});
             }
           }).then(function(result) {
             if(result != undefined){
-              alert("Candidato eliminato con successo!!")
-              App.showCandidates();
+
+              $("#successText").html("Candidato eliminato con successo!!")
+              $("#successModal").modal("show");
+
+              $('#successModal').on('hidden.bs.modal', function () {
+                App.showCandidates();
+              })
+              
             }
          
           })
           .catch((err) =>{
             console.log(err)
-            err.code == 4001 ? alert("Transazione annullata") : alert("Si è verificato un errore");
+            if (err.code == 4001){
+              $("#errorText").html("Transazione annullata")
+            } else {
+              $("#errorText").html("Si è verificato un errore")
+            }
+            $("#errorModal").modal("show");
           })
         })
       }
-    },
+      operazioneCancellaEseguita = 0;
+    })
+
+  },
 
   addCandidate : function() {
 
@@ -173,35 +199,50 @@ App = {
               .then(function(instance) {
                 
                 electionInstance = instance;
-                return electionInstance.open()
+                return electionInstance.open();
                 
-            }).then(function(result) {
-                if( result === true){
-                  alert("Elezione aperta impossibile aggiungere!")
+              }).then(function(result) {
+                if(result == true){
+                  $("#errorText").html("Elezione aperta impossibile aggiungere!!")
+                  $("#errorModal").modal("show");
                 } else {
-                  return electionInstance.addCandidate(nome, partito, link, {from : account});
+                  return electionInstance.addCandidate(nome, partito, link, {from : account})
                 }
-              })
-              .then(function(result) {
+              }).then(function(result) {
                 if(result != undefined){
-                  alert("Candidato aggiunto con successo!!")
-                  App.showCandidates();
+
+                  $("#successText").html("Candidato Aggiunto con successo!!")
+                  $("#successModal").modal("show");
+    
+                  $('#successModal').on('hidden.bs.modal', function () {
+                    App.showCandidates();
+                  })
+                  
                 }
-              })
-              .catch((err) =>{
+              
+                
+              }).catch((err) =>{
                 console.log(err)
-                err.code == 4001 ? alert("Transazione annullata") : alert("Si è verificato un errore");
+                if (err.code == 4001){
+                  $("#errorText").html("Transazione annullata")
+                } else {
+                  $("#errorText").html("Si è verificato un errore")
+                }
+                $("#errorModal").modal("show");
               })
             })
           } else {
-            alert("formato dell'url non valido deve essere un link di un'immagine")
+            $("#errorText").html("formato dell'url non valido deve essere un link di un'immagine")
+            $("#errorModal").modal("show");
           }
         } else {
-          alert("Il nome del partito non può essere vuoto")
+          $("#errorText").html("Il nome del partito non può essere vuoto")
+          $("#errorModal").modal("show");
         }
         
       } else {
-        alert("Il nome non può essere vuoto!")
+        $("#errorText").html("Il nome non può essere vuoto!")
+        $("#errorModal").modal("show");
       }
      
   },
@@ -221,20 +262,31 @@ App = {
      }).then(function(result) {
 
       if( result === false){
-        alert("Elezione già chiusa")
+        $("#errorText").html("Elezione già chiusa");
+        $("#errorModal").modal("show");
       } else {
         return electionInstance.closeElection({from : account});
       }
     })
      .then(function(result) {
         if(result != undefined){
-          alert("Elezione chiusa con successo!!")
-          App.electionIsOpen()
+
+          $("#successText").html("Elezione chiusa con successo!!")
+          $("#successModal").modal("show");
+
+          $('#successModal').on('hidden.bs.modal', function () {
+            App.electionIsOpen();
+          })
         }
      
       })
       .catch((err) =>{
-        err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione già chiusa!...!");
+        if (err.code == 4001){
+          $("#errorText").html("Transazione annullata")
+        } else {
+          $("#errorText").html("Attenzione, elezione già chiusa...")
+        }
+        $("#errorModal").modal("show");
       })
     })
   },
@@ -256,19 +308,29 @@ App = {
      .then(function(result) {
 
       if( result === true){
-        alert("Elezione già aperta")
+        $("#errorText").html("Elezione già aperta!");
+        $("#errorModal").modal("show");
       } else {
         return electionInstance.openElection({from : account});
 
       }
     }).then(function(result) {
       if(result != undefined){
-        alert("Elezione aperta con successo!!")
-        App.electionIsOpen()
+        $("#successText").html("Elezione aperta con successo!!")
+        $("#successModal").modal("show");
+
+        $('#successModal').on('hidden.bs.modal', function () {
+          App.electionIsOpen();
+        })
       }
     })
       .catch((err) =>{
-        err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione già aperta!...!");
+        if (err.code == 4001){
+          $("#errorText").html("Transazione annullata")
+        } else {
+          $("#errorText").html("Attenzione, elezione già aperta!")
+        }
+        $("#errorModal").modal("show");
       })
     }).catch((err)=> {
       alert("Operazione annullata!");
@@ -315,22 +377,35 @@ App = {
    .then(function(result) {
 
     if( result === true){
-      alert("Elezione aperta impossibile rimuovere")
+      $("#errorText").html("Elezione aperta impossibile rimuovere!");
+        $("#errorModal").modal("show");
     } else {
       return electionInstance.resetElection({from : account});
 
     }
   }).then(function(result) {
     if(result != undefined){
-      alert("Rimozione avvenuta!!")
-      App.showCandidates();
+
+      $("#successText").html("Rimozione avvenuta!!")
+        $("#successModal").modal("show");
+
+        $('#successModal').on('hidden.bs.modal', function () {
+          App.showCandidates();
+      })
+      
     }
   })
     .catch((err) =>{
-      err.code == 4001 ? alert("Transazione annullata") : alert("Attenzione, elezione aperta!...!");
+      if (err.code == 4001){
+        $("#errorText").html("Transazione annullata")
+      } else {
+        $("#errorText").html("Attenzione, elezione aperta!!")
+      }
+      $("#errorModal").modal("show");
     })
   }).catch((err)=> {
-    alert("Operazione annullata!");
+    $("#errorText").html("Operazione annullata!")
+    $("#errorModal").modal("show");
     console.log(err)
   })
  }
