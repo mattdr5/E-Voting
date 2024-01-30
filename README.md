@@ -55,6 +55,12 @@ In questo progetto cercheremo di sfruttare la blockchain per correggere le caren
 - Gestione di più elezioni contemporaneamente;
 - Miglioramenti interfaccia grafica
 
+### Avvio del sistema
+- Eseguire il comando npm install per installare tutte le librerie utili
+- Copiare la nostra rete blockchain presente in workspace-ganache
+- Eseguire truffle migrate --reset per deployare gli smartcontract
+- eseguire npm run dev per avviare il sistema
+
 ## Membri del progetto
 - [Matteo Della Rocca](https://github.com/mattdr5)<br />
 - [Carmine D'Angelo](https://github.com/Darnxca)<br/>
